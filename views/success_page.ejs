@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanks For Reaching Out</title>
+
+    <style>
+        
+        body{
+            background: linear-gradient(to right, black, black, #1f2937);
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            width: 100vw;
+            height: 100vh;
+            color: white;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .inner{
+            width: 50%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            
+        }
+        .image{
+            width: 60%;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 80px;
+        }
+        .image img{
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .inner{
+                width: 70%;
+            }
+            .image{
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="inner">
+            <div class="image"> <img src="/images/opg.gif" alt="image"> </div>
+            
+            <%= message %>
+        </div>
+        
+    </div>
+</body>
+</html>
