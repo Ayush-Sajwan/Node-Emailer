@@ -26,6 +26,12 @@ const limiter=rate_limit({
 }
 )
 
+const getReadyLimiter = rate_limit({
+  windowMs: 60 * 1000, 
+  max: 5 ,
+  message: 'Server is already Up'
+});
+
 const oAuth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
@@ -92,9 +98,8 @@ app.post("/sendMsg",limiter,async (req,res)=>{
 
 //adding this endpoint so that can make server ready
 //after a cold start receiving request on other end point
-app.get("/getReady",(req,res)=>{
-    console.log('Getting Server Ready....');
-
+app.get("/getReady",getReadyLimiter,(req,res)=>{
+ 
     res.status(200).send("Ready to send Email...");
 });
 
