@@ -90,6 +90,14 @@ app.post("/sendMsg",limiter,async (req,res)=>{
 
 });
 
+//adding this endpoint so that can make server ready
+//after a cold start receiving request on other end point
+app.get("/getReady",(req,res)=>{
+    console.log('Getting Server Ready....');
+
+    res.status(200).send("Ready to send Email...");
+});
+
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
