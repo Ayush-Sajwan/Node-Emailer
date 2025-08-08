@@ -5,8 +5,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const rate_limit=require("express-rate-limit");
 const path=require('path');
+const cors=require('cors');
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -99,11 +101,11 @@ app.post("/sendMsg",limiter,async (req,res)=>{
 //adding this endpoint so that can make server ready
 //after a cold start receiving request on other end point
 app.get("/getReady",getReadyLimiter,(req,res)=>{
- 
+    console.log("health check received..");
     res.status(200).send("Ready to send Email...");
 });
 
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log("Server running on http://localhost:3000");
 });
 
