@@ -47,32 +47,38 @@ const oAuth2Client = new google.auth.OAuth2(
 oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
 async function sendEmail(name,email,message) {
-
-    const { token } = await oAuth2Client.getAccessToken();
-
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: process.env.EMAIL,
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
-        accessToken: token,
-      },
-    });
-
+  
     let msg="Email of Sender: "+email+" \n \nMessage: "+message;
 
-    const mailOptions = {
-      from: `Mail Bot <${process.env.EMAIL}>`,
-      to: process.env.SEND_TO,
-      subject: 'Enquiry on your portfolio from '+name,
-      text: msg,
-    };
+    const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
-    const result = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent:', result.response);
+    // Construct the email
+    const rawMessage = [
+      `From: ${process.env.EMAIL}`,
+      `To: ${process.env.SEND_TO}`,
+      `Subject: Enquiry from ${name}`,
+      '',
+      `Email of Sender: ${email}`,
+      '',
+      msg
+    ].join('\n');
+
+    // Encode in base64url
+    const encodedMessage = Buffer.from(rawMessage)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    // Send email
+    const res = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedMessage
+      }
+    });
+
+    console.log('✅ Email sent via Gmail API:', res.data.id);
   
 }
 
