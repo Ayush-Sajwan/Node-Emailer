@@ -91,6 +91,8 @@ app.post("/sendMsg",limiter,async (req,res)=>{
     
     message='Thanks For Submitting Your Message. Will Contact Soon on Your Mail...'
     } catch (err) {
+
+      console.log(err.message);
       console.log('error occurred....')
   
       message='Thanks For Submitting Your Message. Will Reach Out Soon on Your Mail...'
