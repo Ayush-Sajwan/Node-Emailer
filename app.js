@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 //trusting render proxy
-// app.set("trust proxy", 1);
+app.set("trust proxy", 1);
 
 // Set views directory (where your EJS files live)
 app.set('views', path.join(__dirname, 'views'));
@@ -48,35 +48,42 @@ oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
 async function sendEmail(name,email,message) {
 
-    const { token } = await oAuth2Client.getAccessToken();
-
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: process.env.EMAIL,
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
-        accessToken: token,
-      },
-    });
 
     let msg="Email of Sender: "+email+" \n \nMessage: "+message;
 
-    const mailOptions = {
-      from: `Mail Bot <${process.env.EMAIL}>`,
-      to: process.env.SEND_TO,
-      subject: 'Enquiry on your portfolio from '+name,
-      text: msg,
-    };
+    const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
-    const result = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent:', result.response);
+    // Construct the email
+    const rawMessage = [
+      `From: ${process.env.EMAIL}`,
+      `To: ${process.env.SEND_TO}`,
+      `Subject: Enquiry from ${name}`,
+      '',
+      `Email of Sender: ${email}`,
+      '',
+      msg
+    ].join('\n');
+
+    // Encode in base64url
+    const encodedMessage = Buffer.from(rawMessage)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    // Send email
+    const res = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedMessage
+      }
+    });
+
+    console.log('✅ Email sent via Gmail API:', res.data.id);
   
 }
 
-app.post("/sendMsg",async (req,res)=>{
+app.post("/sendMsg",limiter,async (req,res)=>{
 
    let {name,email,message} = req.body;
 
@@ -106,12 +113,12 @@ app.post("/sendMsg",async (req,res)=>{
 
 //adding this endpoint so that can make server ready
 //after a cold start receiving request on other end point
-app.get("/getReady",(req,res)=>{
+app.get("/getReady",getReadyLimiter,(req,res)=>{
     console.log("health check received..");
     res.status(200).send("Ready to send Email...");
 });
 
 app.listen(3001, () => {
-  console.log("Server running on http://localhost:3000");
+  console.log("Server running on http://localhost:3001");
 });
 
