@@ -12,8 +12,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 // Set view engine to EJS
 app.set('view engine', 'ejs');
+
+//trusting render proxy
+app.set("trust proxy", 1);
 
 // Set views directory (where your EJS files live)
 app.set('views', path.join(__dirname, 'views'));
