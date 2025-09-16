@@ -76,7 +76,7 @@ async function sendEmail(name,email,message) {
   
 }
 
-app.post("/sendMsg",async (req,res)=>{
+app.post("/sendMsg",limiter,async (req,res)=>{
 
    let {name,email,message} = req.body;
 
@@ -106,7 +106,7 @@ app.post("/sendMsg",async (req,res)=>{
 
 //adding this endpoint so that can make server ready
 //after a cold start receiving request on other end point
-app.get("/getReady",(req,res)=>{
+app.get("/getReady",getReadyLimiter,(req,res)=>{
     console.log("health check received..");
     res.status(200).send("Ready to send Email...");
 });
