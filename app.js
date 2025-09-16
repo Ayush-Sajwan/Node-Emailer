@@ -47,7 +47,7 @@ const oAuth2Client = new google.auth.OAuth2(
 oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
 async function sendEmail(name,email,message) {
-  
+
     let msg="Email of Sender: "+email+" \n \nMessage: "+message;
 
     const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
@@ -57,8 +57,6 @@ async function sendEmail(name,email,message) {
       `From: ${process.env.EMAIL}`,
       `To: ${process.env.SEND_TO}`,
       `Subject: Enquiry from ${name}`,
-      '',
-      `Email of Sender: ${email}`,
       '',
       msg
     ].join('\n');
